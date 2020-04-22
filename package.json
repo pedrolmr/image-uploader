@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "batch": "knex migrate:rollback && knex migrate:latest"
   },
   "keywords": [],
   "author": "",
