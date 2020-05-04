@@ -8,7 +8,7 @@ module.exports = (server) => {
   server.post('/api/register', register);
   server.post('/api/login', login);
   server.get('/api/images', authenticate, imageList);
-  server.post('/api/images', authenticate, postImage);
+  server.post('/api/images', authenticate, validateImage, postImage);
 };
 
 function register(req, res) {
@@ -43,4 +43,41 @@ function imageList(req, res) {
   db('images')
     .then((image) => res.status(200).json(image))
     .catch((error) => res.status(500).json(error));
+}
+
+function findImageById(id) {
+  return db('images').where({ id }).first();
+}
+
+async function addImage(image) {
+  const [id] = await db('images').insert(image).returning('id');
+
+  return findImageById(id);
+}
+
+function validateImage(req, res, next) {
+  const { image, description } = req.body;
+
+  if (Object.keys(req.body).length) {
+    if (image && description) {
+      req.image = {
+        ...req.body,
+        user_id: req.decoded.subject,
+      };
+      next();
+    } else {
+      res.status(428).json({ message: 'missing required field' });
+    }
+  } else {
+    res.status(404).json({ message: 'missing image information' });
+  }
+}
+function postImage(req, res) {
+  addImage(req.image)
+    .then((image) => {
+      res.status(201).json(image);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: 'Error could not post image' });
+    });
 }
