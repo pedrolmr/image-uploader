@@ -1,4 +1,3 @@
-const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const db = require('../database/dbConfig');
 
@@ -81,3 +80,5 @@ function postImage(req, res) {
       res.status(500).json({ message: 'Error could not post image' });
     });
 }
+
+//
