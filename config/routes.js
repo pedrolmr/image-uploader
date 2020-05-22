@@ -17,7 +17,10 @@ function register(req, res) {
 
   db('users')
     .insert(creds)
-    .then((ids) => res.status(201).json(ids))
+    .then((user) => {
+      const token = generateToken(user);
+      res.status(200).json({ message: `${user.username} created!`, token });
+    })
     .catch((error) => json(error));
 }
 
