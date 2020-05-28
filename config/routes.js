@@ -41,11 +41,14 @@ function login(req, res) {
     .catch((error) => res.json(error));
 }
 
-function imageList(req, res) {
-  db('images')
-    .then((image) => res.status(200).json(image))
-    .catch((error) => res.status(500).json(error));
-}
+const imageList = async (req, res) => {
+  try {
+    const images = await db('images').where({ user_id: req.decoded.subject });
+    res.status(200).json(images);
+  } catch (err) {
+    res.status.json(err);
+  }
+};
 
 function findImageById(id) {
   return db('images').where({ id }).first();
@@ -83,6 +86,3 @@ function postImage(req, res) {
       res.status(500).json({ message: 'Error could not post image' });
     });
 }
-
-//
-//
